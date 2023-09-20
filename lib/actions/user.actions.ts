@@ -2,18 +2,18 @@
 
 import { FilterQuery, SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
+
 import Community from "../models/community.model";
 import Thread from "../models/thread.model";
 import User from "../models/user.model";
+
 import { connectToDB } from "../mongoose";
 
 export async function fetchUser(userId: string) {
   try {
     connectToDB();
 
-    return await User
-      .findOne({ id: userId })
-      .populate({
+    return await User.findOne({ id: userId }).populate({
       path: "communities",
       model: Community,
     });
@@ -94,6 +94,7 @@ export async function fetchUserPosts(userId: string) {
   }
 }
 
+// Almost similar to Thead (search + pagination) and Community (search + pagination)
 export async function fetchUsers({
   userId,
   searchString = "",
@@ -110,14 +111,18 @@ export async function fetchUsers({
   try {
     connectToDB();
 
+    // Calculate the number of users to skip based on the page number and page size.
     const skipAmount = (pageNumber - 1) * pageSize;
 
+    // Create a case-insensitive regular expression for the provided search string.
     const regex = new RegExp(searchString, "i");
 
+    // Create an initial query object to filter users.
     const query: FilterQuery<typeof User> = {
-      id: { $ne: userId }, 
+      id: { $ne: userId }, // Exclude the current user from the results.
     };
 
+    // If the search string is not empty, add the $or operator to match either username or name fields.
     if (searchString.trim() !== "") {
       query.$or = [
         { username: { $regex: regex } },
@@ -125,7 +130,7 @@ export async function fetchUsers({
       ];
     }
 
-    // Define the sort options 
+    // Define the sort options for the fetched users based on createdAt field and provided sort order.
     const sortOptions = { createdAt: sortBy };
 
     const usersQuery = User.find(query)
@@ -142,8 +147,9 @@ export async function fetchUsers({
     const isNext = totalUsersCount > skipAmount + users.length;
 
     return { users, isNext };
-  } catch (error : any) {
-    throw new Error(`Error fetching users: ${error.message}`);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
   }
 }
 

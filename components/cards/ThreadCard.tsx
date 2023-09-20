@@ -51,7 +51,7 @@ function ThreadCard({
             <Link href={`/profile/${author.id}`} className='relative h-11 w-11'>
               <Image
                 src={author.image}
-                alt='Profile image'
+                alt='user_community_image'
                 fill
                 className='cursor-pointer rounded-full'
               />
@@ -81,7 +81,7 @@ function ThreadCard({
                 <Link href={`/thread/${id}`}>
                   <Image
                     src='/assets/reply.svg'
-                    alt='reply'
+                    alt='heart'
                     width={24}
                     height={24}
                     className='cursor-pointer object-contain'
@@ -89,14 +89,14 @@ function ThreadCard({
                 </Link>
                 <Image
                   src='/assets/repost.svg'
-                  alt='repost'
+                  alt='heart'
                   width={24}
                   height={24}
                   className='cursor-pointer object-contain'
                 />
                 <Image
                   src='/assets/share.svg'
-                  alt='share'
+                  alt='heart'
                   width={24}
                   height={24}
                   className='cursor-pointer object-contain'
